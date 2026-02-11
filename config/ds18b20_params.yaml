@@ -1,0 +1,17 @@
+ds18b20_temp_node:
+  ros__parameters:
+    # ── Fake Mode ──────────────────────────────────────
+    fake_mode: true             # true: random data, false: real 1-Wire
+
+    # ── 1-Wire Settings ────────────────────────────────
+    device_id: ""               # Auto-detect first 28-* device if empty
+    resolution: 12              # 9, 10, 11, or 12 bits
+
+    # ── Publish Rate ────────────────────────────────────
+    publish_rate: 1.0           # Hz (max ~1.3 Hz at 12-bit)
+
+    # ── TF Frame ────────────────────────────────────────
+    frame_id: "ds18b20_link"
+
+    # ── Variance ────────────────────────────────────────
+    temperature_variance: 0.0    # 0 = unknown
